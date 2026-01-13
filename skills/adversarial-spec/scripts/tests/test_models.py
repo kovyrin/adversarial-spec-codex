@@ -1,9 +1,8 @@
 """Tests for models module."""
 
 import sys
-import json
 from pathlib import Path
-from unittest.mock import Mock, patch, MagicMock
+from unittest.mock import Mock, patch
 
 # Add parent directory to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent))
@@ -20,7 +19,6 @@ from models import (
     call_codex_model,
     call_single_model,
     call_models_parallel,
-    cost_tracker,
     MAX_RETRIES,
     RETRY_BASE_DELAY,
 )
