@@ -148,9 +148,9 @@ def extract_tasks(response: str) -> list[dict]:
         if "[/TASK]" not in part:
             continue
         task_text = part.split("[/TASK]")[0].strip()
-        task = {}
-        current_key = None
-        current_value = []
+        task: dict[str, str | list[str]] = {}
+        current_key: str | None = None
+        current_value: list[str] = []
 
         for line in task_text.split("\n"):
             line = line.strip()

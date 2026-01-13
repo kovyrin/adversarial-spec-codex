@@ -9,9 +9,6 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 from prompts import (
     get_system_prompt,
     get_doc_type_name,
-    SYSTEM_PROMPT_PRD,
-    SYSTEM_PROMPT_TECH,
-    SYSTEM_PROMPT_GENERIC,
     FOCUS_AREAS,
     PERSONAS,
     PRESERVE_INTENT_PROMPT,
