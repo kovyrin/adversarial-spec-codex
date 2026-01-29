@@ -202,7 +202,7 @@ def send_final_spec_to_telegram(
 
 Document: {doc_type_name}
 Rounds: {rounds}
-Models: Claude vs {models_str}
+Models: Codex vs {models_str}
 Total cost: ${cost_tracker.total_cost:.4f}
 
 Final document:

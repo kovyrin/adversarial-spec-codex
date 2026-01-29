@@ -12,7 +12,7 @@ from typing import Optional
 from prompts import FOCUS_AREAS, PERSONAS
 
 PROFILES_DIR = Path.home() / ".config" / "adversarial-spec" / "profiles"
-GLOBAL_CONFIG_PATH = Path.home() / ".claude" / "adversarial-spec" / "config.json"
+GLOBAL_CONFIG_PATH = Path.home() / ".config" / "adversarial-spec" / "config.json"
 
 # Cost per 1M tokens (approximate, as of 2024)
 MODEL_COSTS = {
@@ -86,7 +86,7 @@ BEDROCK_MODEL_MAP = {
 
 
 def load_global_config() -> dict:
-    """Load global config from ~/.claude/adversarial-spec/config.json."""
+    """Load global config from ~/.config/adversarial-spec/config.json."""
     if not GLOBAL_CONFIG_PATH.exists():
         return {}
     try:
@@ -97,7 +97,7 @@ def load_global_config() -> dict:
 
 
 def save_global_config(config: dict):
-    """Save global config to ~/.claude/adversarial-spec/config.json."""
+    """Save global config to ~/.config/adversarial-spec/config.json."""
     GLOBAL_CONFIG_PATH.parent.mkdir(parents=True, exist_ok=True)
     GLOBAL_CONFIG_PATH.write_text(json.dumps(config, indent=2))
 

@@ -1,14 +1,13 @@
 ---
 name: adversarial-spec
-description: Iteratively refine a product spec by debating with multiple LLMs (GPT, Gemini, Grok, etc.) until all models agree. Use when user wants to write or refine a specification document using adversarial development.
-allowed-tools: Bash, Read, Write, AskUserQuestion
+description: Iteratively refine a product spec by debating with multiple LLMs (GPT, Gemini, Grok, etc.) until all models agree, with Codex as the lead reviewer. Use when user wants to write or refine a specification document using adversarial development.
 ---
 
 # Adversarial Spec Development
 
 Generate and refine specifications through iterative debate with multiple LLMs until all models reach consensus.
 
-**Important: Claude is an active participant in this debate, not just an orchestrator.** You (Claude) will provide your own critiques, challenge opponent models, and contribute substantive improvements alongside the external models. Make this clear to the user throughout the process.
+**Important: Codex is an active participant in this debate, not just an orchestrator.** You (Codex) will provide your own critiques, challenge opponent models, and contribute substantive improvements alongside the external models. Make this clear to the user throughout the process.
 
 ## Requirements
 
@@ -16,6 +15,20 @@ Generate and refine specifications through iterative debate with multiple LLMs u
 - API key for at least one provider (set via environment variable), OR AWS Bedrock configured, OR CLI tools (codex, gemini) installed
 
 **IMPORTANT: Do NOT install the `llm` package (Simon Willison's tool).** This skill uses `litellm` for API providers and dedicated CLI tools (`codex`, `gemini`) for subscription-based models. Installing `llm` is unnecessary and may cause confusion.
+
+## Script Location
+
+Use the local path when working in this repo, and the Codex skill path when installed:
+
+- Repo: `skills/adversarial-spec/scripts/debate.py`
+- Installed skill: `~/.codex/skills/adversarial-spec/scripts/debate.py`
+
+Optional convenience:
+```bash
+DEBATE_PY="$PWD/skills/adversarial-spec/scripts/debate.py"
+# Or, if installed as a Codex skill:
+# DEBATE_PY="$HOME/.codex/skills/adversarial-spec/scripts/debate.py"
+```
 
 ## Supported Providers
 
@@ -43,54 +56,31 @@ Generate and refine specifications through iterative debate with multiple LLMs u
 - Models: `gemini-3-pro-preview`, `gemini-3-flash-preview`
 - No API key needed - uses Google account authentication
 
-Run `python3 "$(find ~/.claude -name debate.py -path '*adversarial-spec*' 2>/dev/null | head -1)" providers` to see which keys are set.
-
-## Troubleshooting Auth Conflicts
-
-If you see an error about "Both a token (claude.ai) and an API key (ANTHROPIC_API_KEY) are set":
-
-This conflict occurs when:
-- Claude Code is logged in with `claude /login` (uses claude.ai token)
-- AND you have `ANTHROPIC_API_KEY` set in your environment
-
-**Resolution:**
-1. **To use claude.ai token**: Remove or unset `ANTHROPIC_API_KEY` from your environment
-   ```bash
-   unset ANTHROPIC_API_KEY
-   # Or remove from ~/.bashrc, ~/.zshrc, etc.
-   ```
-
-2. **To use API key**: Sign out of claude.ai
-   ```bash
-   claude /logout
-   # Say "No" to the API key approval if prompted before login
-   ```
-
-The adversarial-spec plugin works with either authentication method. Choose whichever fits your workflow.
+Run `python3 "$DEBATE_PY" providers` to see which keys are set.
 
 ## AWS Bedrock Support
 
-For enterprise users who need to route all model calls through AWS Bedrock (e.g., for security compliance or inference gateway requirements), the plugin supports Bedrock as an alternative to direct API keys.
+For enterprise users who need to route all model calls through AWS Bedrock (e.g., for security compliance or inference gateway requirements), Bedrock can be used as an alternative to direct API keys.
 
 **When Bedrock mode is enabled, ALL model calls route through Bedrock** - no direct API calls are made.
 
 ### Bedrock Setup
 
-To enable Bedrock mode, use these CLI commands (Claude can invoke these when the user requests Bedrock setup):
+To enable Bedrock mode, use these CLI commands (Codex can invoke these when the user requests Bedrock setup):
 
 ```bash
 # Enable Bedrock mode with a region
-python3 "$(find ~/.claude -name debate.py -path '*adversarial-spec*' 2>/dev/null | head -1)" bedrock enable --region us-east-1
+python3 "$DEBATE_PY" bedrock enable --region us-east-1
 
 # Add models that are enabled in your Bedrock account
-python3 "$(find ~/.claude -name debate.py -path '*adversarial-spec*' 2>/dev/null | head -1)" bedrock add-model claude-3-sonnet
-python3 "$(find ~/.claude -name debate.py -path '*adversarial-spec*' 2>/dev/null | head -1)" bedrock add-model claude-3-haiku
+python3 "$DEBATE_PY" bedrock add-model claude-3-sonnet
+python3 "$DEBATE_PY" bedrock add-model claude-3-haiku
 
 # Check current configuration
-python3 "$(find ~/.claude -name debate.py -path '*adversarial-spec*' 2>/dev/null | head -1)" bedrock status
+python3 "$DEBATE_PY" bedrock status
 
 # Disable Bedrock mode (revert to direct API keys)
-python3 "$(find ~/.claude -name debate.py -path '*adversarial-spec*' 2>/dev/null | head -1)" bedrock disable
+python3 "$DEBATE_PY" bedrock disable
 ```
 
 ### Bedrock Model Names
@@ -102,11 +92,11 @@ Users can specify models using friendly names (e.g., `claude-3-sonnet`), which a
 - `mistral-7b`, `mistral-large`, `mixtral-8x7b`
 - `cohere-command`, `cohere-command-r`, `cohere-command-r-plus`
 
-Run `python3 "$(find ~/.claude -name debate.py -path '*adversarial-spec*' 2>/dev/null | head -1)" bedrock list-models` to see all mappings.
+Run `python3 "$DEBATE_PY" bedrock list-models` to see all mappings.
 
 ### Bedrock Configuration Location
 
-Configuration is stored at `~/.claude/adversarial-spec/config.json`:
+Configuration is stored at `~/.config/adversarial-spec/config.json`:
 
 ```json
 {
@@ -199,7 +189,7 @@ Ask the user:
 
 ### Step 0.5: Interview Mode (If Selected)
 
-If the user opts for interview mode, conduct a comprehensive interview using the AskUserQuestion tool. This is NOT a quick Q&A; it's a thorough requirements gathering session.
+If the user opts for interview mode, conduct a comprehensive interview in chat. This is NOT a quick Q&A; it's a thorough requirements gathering session.
 
 **If an existing spec file was provided:**
 - Read the file first
@@ -261,7 +251,7 @@ If the user opts for interview mode, conduct a comprehensive interview using the
 - Look for contradictions between stated requirements
 - Ask about things the user hasn't mentioned but should have
 - Continue until you have enough detail to write a comprehensive spec
-- Use multiple AskUserQuestion calls to cover all topics
+- Use multiple turns to cover all topics
 
 **After interview completion:**
 1. Synthesize all answers into a complete spec document
@@ -271,7 +261,7 @@ If the user opts for interview mode, conduct a comprehensive interview using the
 ### Step 1: Load or Generate Initial Document
 
 **If user provided a file path:**
-- Read the file using the Read tool
+- Read the file from disk
 - Validate it has content
 - Use it as the starting document
 
@@ -307,10 +297,10 @@ Output format (whether loaded or generated):
 First, check which API keys are configured:
 
 ```bash
-python3 "$(find ~/.claude -name debate.py -path '*adversarial-spec*' 2>/dev/null | head -1)" providers
+python3 "$DEBATE_PY" providers
 ```
 
-Then present available models to the user using AskUserQuestion with multiSelect. Build the options list based on which API keys are set:
+Then present available models to the user in chat. Build the options list based on which API keys are set:
 
 **If OPENAI_API_KEY is set, include:**
 - `gpt-4o` - Fast, good for general critique
@@ -346,12 +336,13 @@ Then present available models to the user using AskUserQuestion with multiSelect
 - `gemini-cli/gemini-3-pro-preview` - Google Gemini 3 Pro
 - `gemini-cli/gemini-3-flash-preview` - Google Gemini 3 Flash
 
-Use AskUserQuestion like this:
+Ask the user to choose by number or by model name. Example:
 ```
-question: "Which models should review this spec?"
-header: "Models"
-multiSelect: true
-options: [only include models whose API keys are configured]
+Which models should review this spec?
+1) gpt-4o
+2) o1
+3) gemini/gemini-2.0-flash
+Reply with numbers or model names (comma-separated).
 ```
 
 More models = more perspectives = stricter convergence.
@@ -361,7 +352,7 @@ More models = more perspectives = stricter convergence.
 Run the debate script with selected models:
 
 ```bash
-python3 "$(find ~/.claude -name debate.py -path '*adversarial-spec*' 2>/dev/null | head -1)" critique --models MODEL_LIST --doc-type TYPE <<'SPEC_EOF'
+python3 "$DEBATE_PY" critique --models MODEL_LIST --doc-type TYPE <<'SPEC_EOF'
 <paste your document here>
 SPEC_EOF
 ```
@@ -374,7 +365,7 @@ The script calls all models in parallel and returns each model's critique or `[A
 
 ### Step 4: Review, Critique, and Iterate
 
-**Important: You (Claude) are an active participant in this debate, not just a moderator.** After receiving opponent model responses, you must:
+**Important: You (Codex) are an active participant in this debate, not just a moderator.** After receiving opponent model responses, you must:
 
 1. **Provide your own independent critique** of the current spec
 2. **Evaluate opponent critiques** for validity
@@ -388,13 +379,13 @@ Opponent Models:
 - [Model A]: <agreed | critiqued: summary>
 - [Model B]: <agreed | critiqued: summary>
 
-Claude's Critique:
+Codex's Critique:
 <Your own independent analysis of the spec. What did you find that the opponent models missed? What do you agree/disagree with?>
 
 Synthesis:
 - Accepted from Model A: <what>
 - Accepted from Model B: <what>
-- Added by Claude: <your contributions>
+- Added by Codex: <your contributions>
 - Rejected: <what and why>
 ```
 
@@ -403,7 +394,7 @@ Synthesis:
 If any model says `[AGREE]` within the first 2 rounds, be skeptical. Press the model by running another critique round with explicit instructions:
 
 ```bash
-python3 "$(find ~/.claude -name debate.py -path '*adversarial-spec*' 2>/dev/null | head -1)" critique --models MODEL_NAME --doc-type TYPE --press <<'SPEC_EOF'
+python3 "$DEBATE_PY" critique --models MODEL_NAME --doc-type TYPE --press <<'SPEC_EOF'
 <spec here>
 SPEC_EOF
 ```
@@ -480,14 +471,14 @@ When ALL opponent models AND you have said `[AGREE]`:
    Document: [PRD | Technical Specification]
    Rounds: N
    Models: [list of opponent models]
-   Claude's contributions: [summary of what you added/changed]
+   Codex's contributions: [summary of what you added/changed]
 
    Key refinements made:
    - [bullet points of major changes from initial to final]
    ```
 4. If Telegram enabled:
    ```bash
-   python3 "$(find ~/.claude -name debate.py -path '*adversarial-spec*' 2>/dev/null | head -1)" send-final --models MODEL_LIST --doc-type TYPE --rounds N <<'SPEC_EOF'
+   python3 "$DEBATE_PY" send-final --models MODEL_LIST --doc-type TYPE --rounds N <<'SPEC_EOF'
    <final document here>
    SPEC_EOF
    ```
@@ -542,7 +533,7 @@ After the user review period, or if explicitly requested:
    Cycles: 2
    Total Rounds: 5 (Cycle 1: 3, Cycle 2: 2)
    Models: Cycle 1: [models], Cycle 2: [models]
-   Claude's contributions: [summary across all cycles]
+   Codex's contributions: [summary across all cycles]
    ```
 
 **Use cases for additional cycles:**
@@ -569,7 +560,7 @@ This creates a complete PRD + Tech Spec pair from a single session.
 ## Convergence Rules
 
 - Maximum 10 rounds per cycle (ask user to continue if reached)
-- ALL models AND Claude must agree for convergence
+- ALL models AND Codex must agree for convergence
 - More models = stricter convergence (each adds a perspective)
 - Do not agree prematurely - only accept when document is genuinely complete
 - Apply critique criteria rigorously based on document type
@@ -588,11 +579,18 @@ Enable real-time notifications and human-in-the-loop feedback. Only active with 
 
 ### Setup
 
+Set the helper path:
+```bash
+TELEGRAM_PY="$HOME/.codex/skills/adversarial-spec/scripts/telegram_bot.py"
+# Or, if running from the repo:
+# TELEGRAM_PY="$PWD/skills/adversarial-spec/scripts/telegram_bot.py"
+```
+
 1. Message @BotFather on Telegram, send `/newbot`, follow prompts
 2. Copy the bot token
 3. Run setup:
    ```bash
-   python3 "$(find ~/.claude -name telegram_bot.py -path '*adversarial-spec*' 2>/dev/null | head -1)" setup
+   python3 "$TELEGRAM_PY" setup
    ```
 4. Message your bot, then run setup again to get chat ID
 5. Set environment variables:
@@ -604,7 +602,7 @@ Enable real-time notifications and human-in-the-loop feedback. Only active with 
 ### Usage
 
 ```bash
-python3 debate.py critique --model gpt-4o --doc-type tech --telegram <<'SPEC_EOF'
+python3 "$DEBATE_PY" critique --model gpt-4o --doc-type tech --telegram <<'SPEC_EOF'
 <document here>
 SPEC_EOF
 ```
@@ -622,7 +620,7 @@ After each round:
 Direct models to prioritize specific concerns using `--focus`:
 
 ```bash
-python3 debate.py critique --models gpt-4o --focus security --doc-type tech <<'SPEC_EOF'
+python3 "$DEBATE_PY" critique --models gpt-4o --focus security --doc-type tech <<'SPEC_EOF'
 <spec here>
 SPEC_EOF
 ```
@@ -635,14 +633,14 @@ SPEC_EOF
 - `reliability` - Failure modes, circuit breakers, retries, disaster recovery
 - `cost` - Infrastructure costs, resource efficiency, build vs buy
 
-Run `python3 debate.py focus-areas` to see all options.
+Run `python3 "$DEBATE_PY" focus-areas` to see all options.
 
 ### Model Personas
 
 Have models critique from specific professional perspectives using `--persona`:
 
 ```bash
-python3 debate.py critique --models gpt-4o --persona "security-engineer" --doc-type tech <<'SPEC_EOF'
+python3 "$DEBATE_PY" critique --models gpt-4o --persona "security-engineer" --doc-type tech <<'SPEC_EOF'
 <spec here>
 SPEC_EOF
 ```
@@ -659,7 +657,7 @@ SPEC_EOF
 - `accessibility-specialist` - WCAG compliance, screen reader support
 - `legal-compliance` - GDPR, CCPA, regulatory requirements
 
-Run `python3 debate.py personas` to see all options.
+Run `python3 "$DEBATE_PY" personas` to see all options.
 
 Custom personas also work: `--persona "fintech compliance officer"`
 
@@ -668,7 +666,7 @@ Custom personas also work: `--persona "fintech compliance officer"`
 Include existing documents as context for the critique using `--context`:
 
 ```bash
-python3 debate.py critique --models gpt-4o --context ./existing-api.md --context ./schema.sql --doc-type tech <<'SPEC_EOF'
+python3 "$DEBATE_PY" critique --models gpt-4o --context ./existing-api.md --context ./schema.sql --doc-type tech <<'SPEC_EOF'
 <spec here>
 SPEC_EOF
 ```
@@ -685,15 +683,15 @@ Long debates can crash or need to pause. Sessions save state automatically:
 
 ```bash
 # Start a named session
-python3 debate.py critique --models gpt-4o --session my-feature-spec --doc-type tech <<'SPEC_EOF'
+python3 "$DEBATE_PY" critique --models gpt-4o --session my-feature-spec --doc-type tech <<'SPEC_EOF'
 <spec here>
 SPEC_EOF
 
 # Resume where you left off (no stdin needed)
-python3 debate.py critique --resume my-feature-spec
+python3 "$DEBATE_PY" critique --resume my-feature-spec
 
 # List all sessions
-python3 debate.py sessions
+python3 "$DEBATE_PY" sessions
 ```
 
 Sessions save:
@@ -742,7 +740,7 @@ This catches cases where models forget to format their revised spec correctly.
 Convergence can collapse toward lowest-common-denominator interpretations, sanding off novel design choices. The `--preserve-intent` flag makes removals expensive:
 
 ```bash
-python3 debate.py critique --models gpt-4o --preserve-intent --doc-type tech <<'SPEC_EOF'
+python3 "$DEBATE_PY" critique --models gpt-4o --preserve-intent --doc-type tech <<'SPEC_EOF'
 <spec here>
 SPEC_EOF
 ```
@@ -789,19 +787,19 @@ Save frequently used configurations as profiles:
 
 **Create a profile:**
 ```bash
-python3 debate.py save-profile strict-security --models gpt-4o,gemini/gemini-2.0-flash --focus security --doc-type tech
+python3 "$DEBATE_PY" save-profile strict-security --models gpt-4o,gemini/gemini-2.0-flash --focus security --doc-type tech
 ```
 
 **Use a profile:**
 ```bash
-python3 debate.py critique --profile strict-security <<'SPEC_EOF'
+python3 "$DEBATE_PY" critique --profile strict-security <<'SPEC_EOF'
 <spec here>
 SPEC_EOF
 ```
 
 **List profiles:**
 ```bash
-python3 debate.py profiles
+python3 "$DEBATE_PY" profiles
 ```
 
 Profiles are stored in `~/.config/adversarial-spec/profiles/`.
@@ -813,7 +811,7 @@ Profile settings can be overridden by explicit flags.
 Generate a unified diff between spec versions:
 
 ```bash
-python3 debate.py diff --previous round1.md --current round2.md
+python3 "$DEBATE_PY" diff --previous round1.md --current round2.md
 ```
 
 Use this to see exactly what changed between rounds. Helpful for:
@@ -826,7 +824,7 @@ Use this to see exactly what changed between rounds. Helpful for:
 Extract actionable tasks from a finalized spec:
 
 ```bash
-cat spec-output.md | python3 debate.py export-tasks --models gpt-4o --doc-type prd
+cat spec-output.md | python3 "$DEBATE_PY" export-tasks --models gpt-4o --doc-type prd
 ```
 
 Output includes:
@@ -839,30 +837,30 @@ Output includes:
 Use `--json` for structured output suitable for importing into issue trackers:
 
 ```bash
-cat spec-output.md | python3 debate.py export-tasks --models gpt-4o --doc-type prd --json > tasks.json
+cat spec-output.md | python3 "$DEBATE_PY" export-tasks --models gpt-4o --doc-type prd --json > tasks.json
 ```
 
 ## Script Reference
 
 ```bash
 # Core commands
-python3 debate.py critique --models MODEL_LIST --doc-type TYPE [OPTIONS] < spec.md
-python3 debate.py critique --resume SESSION_ID
-python3 debate.py diff --previous OLD.md --current NEW.md
-python3 debate.py export-tasks --models MODEL --doc-type TYPE [--json] < spec.md
+python3 "$DEBATE_PY" critique --models MODEL_LIST --doc-type TYPE [OPTIONS] < spec.md
+python3 "$DEBATE_PY" critique --resume SESSION_ID
+python3 "$DEBATE_PY" diff --previous OLD.md --current NEW.md
+python3 "$DEBATE_PY" export-tasks --models MODEL --doc-type TYPE [--json] < spec.md
 
 # Info commands
-python3 debate.py providers      # List supported providers and API key status
-python3 debate.py focus-areas    # List available focus areas
-python3 debate.py personas       # List available personas
-python3 debate.py profiles       # List saved profiles
-python3 debate.py sessions       # List saved sessions
+python3 "$DEBATE_PY" providers      # List supported providers and API key status
+python3 "$DEBATE_PY" focus-areas    # List available focus areas
+python3 "$DEBATE_PY" personas       # List available personas
+python3 "$DEBATE_PY" profiles       # List saved profiles
+python3 "$DEBATE_PY" sessions       # List saved sessions
 
 # Profile management
-python3 debate.py save-profile NAME --models ... [--focus ...] [--persona ...]
+python3 "$DEBATE_PY" save-profile NAME --models ... [--focus ...] [--persona ...]
 
 # Telegram
-python3 debate.py send-final --models MODEL_LIST --doc-type TYPE --rounds N < spec.md
+python3 "$DEBATE_PY" send-final --models MODEL_LIST --doc-type TYPE --rounds N < spec.md
 ```
 
 **Critique options:**

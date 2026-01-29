@@ -12,7 +12,6 @@ All notable changes to this project will be documented in this file.
 - Added pre-flight validation to check that models have required API keys before running critique
 - Added clear error messages when API keys are missing, showing which key is needed for each model
 - Fixed model selection to prioritize available providers in order: Bedrock, OpenAI, Anthropic, Google, xAI, etc.
-- Added documentation for resolving Claude Code auth conflicts (claude.ai token vs ANTHROPIC_API_KEY)
 - Updated documentation to include Anthropic provider in supported models table
 
 ### Changed
@@ -20,6 +19,8 @@ All notable changes to this project will be documented in this file.
 - `--models` argument now auto-detects default model from available API keys instead of assuming `gpt-4o`
 - Script now fails fast with helpful error messages if no API keys are configured
 - Profile loading now correctly handles the new dynamic default model selection
+- Updated docs/skill to be Codex-first and removed Claude Code plugin instructions
+- Bedrock config path moved to `~/.config/adversarial-spec/config.json`
 
 ### Added
 
