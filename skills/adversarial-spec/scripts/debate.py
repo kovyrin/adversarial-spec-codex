@@ -705,7 +705,7 @@ def handle_export_tasks(args: argparse.Namespace, models: list[str]) -> None:
         completion_kwargs = {
             "model": models[0],
             "messages": [{"role": "user", "content": prompt}],
-            "max_tokens": 8000,
+            "max_tokens": 100000,
         }
 
         # O-series models don't support custom temperature

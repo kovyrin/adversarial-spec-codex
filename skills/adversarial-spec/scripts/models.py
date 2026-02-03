@@ -617,7 +617,7 @@ def call_single_model(
                     {"role": "system", "content": system_prompt},
                     {"role": "user", "content": user_message},
                 ],
-                "max_tokens": 8000,
+                "max_tokens": 100000,
                 "timeout": timeout,
             }
 
