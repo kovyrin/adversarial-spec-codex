@@ -147,6 +147,23 @@ def load_context_files(context_paths: list[str]) -> str:
     )
 
 
+def build_constitution_section(context: str) -> str:
+    """Build scoping instructions tied to project constitution usage."""
+    if "CONSTITUTION.md" in context:
+        return (
+            "**SCOPING REQUIREMENT**\n"
+            "Before making any assumptions about project scope, requirements, or priorities, "
+            "consult `CONSTITUTION.md` in the provided context and align your critique to it. "
+            "If a requirement conflicts with the constitution, call it out explicitly."
+        )
+
+    return (
+        "**SCOPING REQUIREMENT**\n"
+        "`CONSTITUTION.md` was not provided in context. Do not invent project scope assumptions; "
+        "flag missing scope as an explicit open question."
+    )
+
+
 def detect_agreement(response: str) -> bool:
     """Check if response indicates agreement."""
     return "[AGREE]" in response
@@ -286,7 +303,7 @@ def call_codex_model(
     Args:
         system_prompt: System instructions for the model
         user_message: User prompt to send
-        model: Model name (e.g., "codex/gpt-5.2-codex" -> uses "gpt-5.2-codex")
+        model: Model name (e.g., "codex/gpt-5.3-codex" -> uses "gpt-5.3-codex")
         reasoning_effort: Thinking level (minimal, low, medium, high, xhigh). Default: xhigh
         timeout: Timeout in seconds (default 10 minutes)
         search: Enable web search capability for Codex
@@ -557,6 +574,7 @@ def call_single_model(
         focus_section = PRESERVE_INTENT_PROMPT + "\n\n" + focus_section
 
     context_section = context if context else ""
+    constitution_section = build_constitution_section(context_section)
 
     template = PRESS_PROMPT_TEMPLATE if press else REVIEW_PROMPT_TEMPLATE
     user_message = template.format(
@@ -565,6 +583,7 @@ def call_single_model(
         spec=spec,
         focus_section=focus_section,
         context_section=context_section,
+        constitution_section=constitution_section,
     )
 
     # Route Codex CLI models to dedicated handler

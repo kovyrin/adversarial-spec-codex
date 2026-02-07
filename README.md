@@ -55,13 +55,14 @@ You describe product --> Codex drafts spec --> Multiple LLMs critique in paralle
 
 1. Describe your product concept or provide an existing document
 2. (Optional) Start with an in-depth interview to capture requirements
-3. Codex drafts the initial document (PRD or tech spec)
-4. Document is sent to opponent models (GPT, Gemini, Grok, etc.) for parallel critique
-5. Codex provides independent critique alongside opponent feedback
-6. Codex synthesizes all feedback and revises
-7. Loop continues until ALL models AND Codex agree
-8. User review period: request changes or run additional cycles
-9. Final converged document is output
+3. Codex checks `CONSTITUTION.md` in the project root and uses it to scope assumptions
+4. Codex drafts the initial document (PRD or tech spec)
+5. Document is sent to opponent models (GPT, Gemini, Grok, etc.) for parallel critique
+6. Codex provides independent critique alongside opponent feedback
+7. Codex synthesizes all feedback and revises
+8. Loop continues until ALL models AND Codex agree
+9. User review period: request changes or run additional cycles
+10. Final converged document is output
 
 ## Requirements
 
@@ -80,7 +81,7 @@ You describe product --> Codex drafts spec --> Multiple LLMs critique in paralle
 | Mistral    | `MISTRAL_API_KEY`      | `mistral/mistral-large`, `mistral/codestral` |
 | Groq       | `GROQ_API_KEY`         | `groq/llama-3.3-70b-versatile`               |
 | OpenRouter | `OPENROUTER_API_KEY`   | `openrouter/openai/gpt-4o`, `openrouter/anthropic/claude-3.5-sonnet` |
-| Codex CLI  | ChatGPT subscription   | `codex/gpt-5.2-codex`, `codex/gpt-5.1-codex-max` |
+| Codex CLI  | ChatGPT subscription   | `codex/gpt-5.3-codex`, `codex/gpt-5.2-codex` |
 | Gemini CLI | Google account         | `gemini-cli/gemini-3-pro-preview`, `gemini-cli/gemini-3-flash-preview` |
 | Deepseek   | `DEEPSEEK_API_KEY`     | `deepseek/deepseek-chat`                     |
 | Zhipu      | `ZHIPUAI_API_KEY`      | `zhipu/glm-4`, `zhipu/glm-4-plus`            |
@@ -152,7 +153,7 @@ See the full model list at [openrouter.ai/models](https://openrouter.ai/models).
 npm install -g @openai/codex
 
 # Use Codex models (prefix with codex/)
-python3 "$DEBATE_PY" critique --models codex/gpt-5.2-codex,gemini/gemini-2.0-flash < spec.md
+python3 "$DEBATE_PY" critique --models codex/gpt-5.3-codex,gemini/gemini-2.0-flash < spec.md
 ```
 
 **Reasoning effort:**
@@ -161,14 +162,14 @@ Control how much thinking time the model uses with `--codex-reasoning`:
 
 ```bash
 # Available levels: low, medium, high, xhigh (default: xhigh)
-python3 "$DEBATE_PY" critique --models codex/gpt-5.2-codex --codex-reasoning high < spec.md
+python3 "$DEBATE_PY" critique --models codex/gpt-5.3-codex --codex-reasoning high < spec.md
 ```
 
 Higher reasoning effort produces more thorough analysis but uses more tokens.
 
 **Available Codex models:**
+- `codex/gpt-5.3-codex` - GPT-5.3 via Codex CLI
 - `codex/gpt-5.2-codex` - GPT-5.2 via Codex CLI
-- `codex/gpt-5.1-codex-max` - GPT-5.1 Max via Codex CLI
 
 Check Codex CLI installation status:
 
@@ -374,6 +375,8 @@ Use cases:
 - Database schemas the spec must work with
 - Design documents or prior specs for consistency
 - Compliance requirements documents
+
+`CONSTITUTION.md` in the current project root is auto-included for `critique` runs when present, so model assumptions stay aligned with project scope.
 
 ### Session Persistence and Resume
 

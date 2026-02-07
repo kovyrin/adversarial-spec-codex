@@ -6,7 +6,7 @@ Sends specs to multiple LLMs for critique using LiteLLM.
 Usage:
     echo "spec" | python3 debate.py critique --models gpt-4o
     echo "spec" | python3 debate.py critique --models gpt-4o,gemini/gemini-2.0-flash,xai/grok-3 --doc-type prd
-    echo "spec" | python3 debate.py critique --models codex/gpt-5.2-codex,gemini/gemini-2.0-flash --doc-type tech
+    echo "spec" | python3 debate.py critique --models codex/gpt-5.3-codex,gemini/gemini-2.0-flash --doc-type tech
     echo "spec" | python3 debate.py critique --models gpt-4o --focus security
     echo "spec" | python3 debate.py critique --models gpt-4o --persona "security engineer"
     echo "spec" | python3 debate.py critique --models gpt-4o --context ./api.md --context ./schema.sql
@@ -28,7 +28,7 @@ Supported providers (set corresponding API key):
     Mistral:    MISTRAL_API_KEY      models: mistral/mistral-large, etc.
     Groq:       GROQ_API_KEY         models: groq/llama-3.3-70b, etc.
     OpenRouter: OPENROUTER_API_KEY   models: openrouter/openai/gpt-4o, openrouter/anthropic/claude-3.5-sonnet, etc.
-    Codex CLI:  (ChatGPT subscription) models: codex/gpt-5.2-codex, codex/gpt-5.1-codex-max
+    Codex CLI:  (ChatGPT subscription) models: codex/gpt-5.3-codex, codex/gpt-5.2-codex
                 Install: npm install -g @openai/codex && codex login
                 Reasoning: --codex-reasoning xhigh (minimal, low, medium, high, xhigh)
     Claude CLI: (Claude account)       models: claude-cli/sonnet, claude-cli/opus
@@ -613,6 +613,30 @@ def parse_models(args: argparse.Namespace) -> list[str]:
     return models
 
 
+def add_project_constitution_context(args: argparse.Namespace) -> None:
+    """Automatically include project constitution for critique scoping."""
+    if args.action != "critique":
+        return
+
+    constitution_path = Path.cwd() / "CONSTITUTION.md"
+    if not constitution_path.exists():
+        return
+
+    existing_context = args.context or []
+    normalized_paths = set()
+    for path in existing_context:
+        try:
+            normalized_paths.add(str(Path(path).expanduser().resolve()))
+        except OSError:
+            normalized_paths.add(path)
+
+    constitution_resolved = str(constitution_path.resolve())
+    if constitution_resolved in normalized_paths:
+        return
+
+    args.context = [constitution_resolved] + existing_context
+
+
 def setup_bedrock(
     args: argparse.Namespace, models: list[str]
 ) -> tuple[list[str], bool, Optional[str]]:
@@ -1036,6 +1060,7 @@ def main() -> None:
         return
 
     apply_profile(args)
+    add_project_constitution_context(args)
     models = parse_models(args)
     context = load_context_files(args.context) if args.context else None
     models, bedrock_mode, bedrock_region = setup_bedrock(args, models)

@@ -319,6 +319,58 @@ class TestCreateParser:
         assert args.timeout == 600
 
 
+class TestConstitutionContext:
+    def test_adds_project_constitution_to_context(self):
+        import debate
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            project_root = Path(tmpdir)
+            constitution = project_root / "CONSTITUTION.md"
+            constitution.write_text("# Constitution")
+
+            parser = debate.create_parser()
+            args = parser.parse_args(["critique"])
+
+            with patch("debate.Path.cwd", return_value=project_root):
+                debate.add_project_constitution_context(args)
+
+            assert args.context == [str(constitution.resolve())]
+
+    def test_does_not_duplicate_existing_constitution_path(self):
+        import debate
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            project_root = Path(tmpdir)
+            constitution = project_root / "CONSTITUTION.md"
+            constitution.write_text("# Constitution")
+
+            parser = debate.create_parser()
+            args = parser.parse_args(
+                ["critique", "--context", str(constitution.resolve())]
+            )
+
+            with patch("debate.Path.cwd", return_value=project_root):
+                debate.add_project_constitution_context(args)
+
+            assert args.context == [str(constitution.resolve())]
+
+    def test_skips_non_critique_actions(self):
+        import debate
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            project_root = Path(tmpdir)
+            constitution = project_root / "CONSTITUTION.md"
+            constitution.write_text("# Constitution")
+
+            parser = debate.create_parser()
+            args = parser.parse_args(["providers"])
+
+            with patch("debate.Path.cwd", return_value=project_root):
+                debate.add_project_constitution_context(args)
+
+            assert args.context == []
+
+
 class TestHandleInfoCommand:
     def test_returns_false_for_non_info_command(self):
         """Test that non-info commands return False."""
