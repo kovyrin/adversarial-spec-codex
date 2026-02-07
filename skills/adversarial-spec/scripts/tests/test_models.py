@@ -12,6 +12,7 @@ from models import (
     RETRY_BASE_DELAY,
     CostTracker,
     ModelResponse,
+    build_constitution_section,
     call_codex_model,
     call_gemini_cli_model,
     call_models_parallel,
@@ -515,6 +516,18 @@ class TestLoadContextFiles:
         assert "### Context:" in result
         assert "```" in result
         assert "XX" not in result  # No mutation artifacts
+
+
+class TestBuildConstitutionSection:
+    def test_uses_constitution_when_present(self):
+        section = build_constitution_section("### Context: /repo/CONSTITUTION.md")
+        assert "consult `CONSTITUTION.md`" in section
+        assert "conflicts with the constitution" in section
+
+    def test_blocks_invented_scope_when_missing(self):
+        section = build_constitution_section("")
+        assert "`CONSTITUTION.md` was not provided" in section
+        assert "Do not invent project scope assumptions" in section
 
 
 class TestCallCodexModel:
