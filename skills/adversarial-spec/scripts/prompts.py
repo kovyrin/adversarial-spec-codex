@@ -237,6 +237,7 @@ Here is the current {doc_type_name}:
 {spec}
 
 {context_section}
+{constitution_section}
 {focus_section}
 Review this document according to your criteria. Either critique and revise it, or say [AGREE] if it's production-ready."""
 
@@ -247,6 +248,7 @@ Here is the current {doc_type_name}:
 {spec}
 
 {context_section}
+{constitution_section}
 **IMPORTANT: Please confirm your agreement by thoroughly reviewing the ENTIRE document.**
 
 Before saying [AGREE], you MUST:

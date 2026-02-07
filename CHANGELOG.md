@@ -21,9 +21,12 @@ All notable changes to this project will be documented in this file.
 - Profile loading now correctly handles the new dynamic default model selection
 - Updated docs/skill to be Codex-first and removed Claude Code plugin instructions
 - Bedrock config path moved to `~/.config/adversarial-spec/config.json`
+- Replaced `codex/gpt-5.1-*` references with `codex/gpt-5.3-codex` in providers and docs
 
 ### Added
 
+- Automatic inclusion of `CONSTITUTION.md` from the project root as critique context when present
+- Prompt-level scoping instruction that requires consulting `CONSTITUTION.md` before making assumptions
 - New `get_available_providers()` function to detect configured API keys
 - New `get_default_model()` function to select appropriate default based on available keys
 - New `validate_model_credentials()` function to pre-validate model API key requirements

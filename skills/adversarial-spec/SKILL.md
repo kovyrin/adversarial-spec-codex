@@ -24,6 +24,7 @@ Use the local path when working in this repo, and the Codex skill path when inst
 - Installed skill: `~/.codex/skills/adversarial-spec/scripts/debate.py`
 
 Optional convenience:
+
 ```bash
 DEBATE_PY="$PWD/skills/adversarial-spec/scripts/debate.py"
 # Or, if installed as a Codex skill:
@@ -32,26 +33,28 @@ DEBATE_PY="$PWD/skills/adversarial-spec/scripts/debate.py"
 
 ## Supported Providers
 
-| Provider   | API Key Env Var        | Example Models                              |
-|------------|------------------------|---------------------------------------------|
-| OpenAI     | `OPENAI_API_KEY`       | `gpt-5.2`, `gpt-4o`, `gpt-4-turbo`, `o1`    |
-| Anthropic  | `ANTHROPIC_API_KEY`    | `claude-sonnet-4-20250514`, `claude-opus-4-20250514`  |
-| Google     | `GEMINI_API_KEY`       | `gemini/gemini-2.0-flash`, `gemini/gemini-pro` |
-| xAI        | `XAI_API_KEY`          | `xai/grok-3`, `xai/grok-beta`               |
-| Mistral    | `MISTRAL_API_KEY`      | `mistral/mistral-large`, `mistral/codestral`|
-| Groq       | `GROQ_API_KEY`         | `groq/llama-3.3-70b-versatile`              |
-| OpenRouter | `OPENROUTER_API_KEY`   | `openrouter/openai/gpt-4o`, `openrouter/anthropic/claude-3.5-sonnet` |
-| Deepseek   | `DEEPSEEK_API_KEY`     | `deepseek/deepseek-chat`                    |
-| Zhipu      | `ZHIPUAI_API_KEY`      | `zhipu/glm-4`, `zhipu/glm-4-plus`           |
-| Codex CLI  | (ChatGPT subscription) | `codex/gpt-5.2-codex`, `codex/gpt-5.1-codex-max` |
+| Provider   | API Key Env Var        | Example Models                                                         |
+| ---------- | ---------------------- | ---------------------------------------------------------------------- |
+| OpenAI     | `OPENAI_API_KEY`       | `gpt-5.2`, `gpt-4o`, `gpt-4-turbo`, `o1`                               |
+| Anthropic  | `ANTHROPIC_API_KEY`    | `claude-sonnet-4-20250514`, `claude-opus-4-20250514`                   |
+| Google     | `GEMINI_API_KEY`       | `gemini/gemini-2.0-flash`, `gemini/gemini-pro`                         |
+| xAI        | `XAI_API_KEY`          | `xai/grok-3`, `xai/grok-beta`                                          |
+| Mistral    | `MISTRAL_API_KEY`      | `mistral/mistral-large`, `mistral/codestral`                           |
+| Groq       | `GROQ_API_KEY`         | `groq/llama-3.3-70b-versatile`                                         |
+| OpenRouter | `OPENROUTER_API_KEY`   | `openrouter/openai/gpt-4o`, `openrouter/anthropic/claude-3.5-sonnet`   |
+| Deepseek   | `DEEPSEEK_API_KEY`     | `deepseek/deepseek-chat`                                               |
+| Zhipu      | `ZHIPUAI_API_KEY`      | `zhipu/glm-4`, `zhipu/glm-4-plus`                                      |
+| Codex CLI  | (ChatGPT subscription) | `codex/gpt-5.3-codex`, `codex/gpt-5.2-codex`                           |
 | Gemini CLI | (Google account)       | `gemini-cli/gemini-3-pro-preview`, `gemini-cli/gemini-3-flash-preview` |
 
 **Codex CLI Setup:**
+
 - Install: `npm install -g @openai/codex && codex login`
 - Reasoning effort: `--codex-reasoning` (minimal, low, medium, high, xhigh)
 - Web search: `--codex-search` (enables web search for current information)
 
 **Gemini CLI Setup:**
+
 - Install: `npm install -g @google/gemini-cli && gemini auth`
 - Models: `gemini-3-pro-preview`, `gemini-3-flash-preview`
 - No API key needed - uses Google account authentication
@@ -122,6 +125,7 @@ Ask the user which type of document they want to produce:
 Business and product-focused document for stakeholders, PMs, and designers.
 
 **Structure:**
+
 - Executive Summary
 - Problem Statement / Opportunity
 - Target Users / Personas
@@ -135,6 +139,7 @@ Business and product-focused document for stakeholders, PMs, and designers.
 - Timeline / Milestones (optional)
 
 **Critique Criteria:**
+
 1. Clear problem definition with evidence
 2. Well-defined user personas with real pain points
 3. User stories follow proper format (As a... I want... So that...)
@@ -148,6 +153,7 @@ Business and product-focused document for stakeholders, PMs, and designers.
 Engineering-focused document for developers and architects.
 
 **Structure:**
+
 - Overview / Context
 - Goals and Non-Goals
 - System Architecture
@@ -165,6 +171,7 @@ Engineering-focused document for developers and architects.
 - Open Questions / Future Considerations
 
 **Critique Criteria:**
+
 1. Clear architectural decisions with rationale
 2. Complete API contracts (not just endpoints, but full schemas)
 3. Data model handles all identified use cases
@@ -192,6 +199,7 @@ Ask the user:
 If the user opts for interview mode, conduct a comprehensive interview in chat. This is NOT a quick Q&A; it's a thorough requirements gathering session.
 
 **If an existing spec file was provided:**
+
 - Read the file first
 - Use it as the basis for probing questions
 - Identify gaps, ambiguities, and unstated assumptions
@@ -246,6 +254,7 @@ If the user opts for interview mode, conduct a comprehensive interview in chat. 
    - What would "exceeding expectations" look like?
 
 **Interview Guidelines:**
+
 - Ask probing follow-up questions. Don't accept surface-level answers.
 - Challenge assumptions: "You mentioned X. What if Y instead?"
 - Look for contradictions between stated requirements
@@ -254,6 +263,7 @@ If the user opts for interview mode, conduct a comprehensive interview in chat. 
 - Use multiple turns to cover all topics
 
 **After interview completion:**
+
 1. Synthesize all answers into a complete spec document
 2. Write the spec to file
 3. Show the user the generated spec and confirm before proceeding to debate
@@ -261,9 +271,16 @@ If the user opts for interview mode, conduct a comprehensive interview in chat. 
 ### Step 1: Load or Generate Initial Document
 
 **If user provided a file path:**
+
 - Read the file from disk
 - Validate it has content
 - Use it as the starting document
+
+**Before making assumptions (always):**
+
+- Read `./CONSTITUTION.md` from the project root.
+- Treat it as the primary scoping document for boundaries, priorities, and constraints.
+- If it is missing, state that explicitly and keep assumptions minimal and clearly labeled.
 
 **If user describes what to build (no existing file, no interview mode):**
 
@@ -286,6 +303,7 @@ This is the primary use case. The user describes their product concept, and you 
    - Incorporate user feedback before proceeding
 
 Output format (whether loaded or generated):
+
 ```
 [SPEC]
 <document content here>
@@ -303,40 +321,52 @@ python3 "$DEBATE_PY" providers
 Then present available models to the user in chat. Build the options list based on which API keys are set:
 
 **If OPENAI_API_KEY is set, include:**
+
 - `gpt-4o` - Fast, good for general critique
 - `o1` - Stronger reasoning, slower
 
 **If ANTHROPIC_API_KEY is set, include:**
+
 - `claude-sonnet-4-20250514` - Claude 3.5 Sonnet v2, excellent reasoning
 - `claude-opus-4-20250514` - Claude 3 Opus, highest capability
 
 **If GEMINI_API_KEY is set, include:**
+
 - `gemini/gemini-2.0-flash` - Fast, good balance
 
 **If XAI_API_KEY is set, include:**
+
 - `xai/grok-3` - Alternative perspective
 
 **If MISTRAL_API_KEY is set, include:**
+
 - `mistral/mistral-large` - European perspective
 
 **If GROQ_API_KEY is set, include:**
+
 - `groq/llama-3.3-70b-versatile` - Fast open-source
 
 **If DEEPSEEK_API_KEY is set, include:**
+
 - `deepseek/deepseek-chat` - Cost-effective
 
 **If ZHIPUAI_API_KEY is set, include:**
+
 - `zhipu/glm-4` - Chinese language model
 - `zhipu/glm-4-plus` - Enhanced GLM model
 
 **If Codex CLI is installed, include:**
-- `codex/gpt-5.2-codex` - OpenAI Codex with extended reasoning
+
+- `codex/gpt-5.3-codex` - OpenAI Codex with extended reasoning
+- `codex/gpt-5.2-codex` - OpenAI Codex fallback
 
 **If Gemini CLI is installed, include:**
+
 - `gemini-cli/gemini-3-pro-preview` - Google Gemini 3 Pro
 - `gemini-cli/gemini-3-flash-preview` - Google Gemini 3 Flash
 
 Ask the user to choose by number or by model name. Example:
+
 ```
 Which models should review this spec?
 1) gpt-4o
@@ -358,6 +388,7 @@ SPEC_EOF
 ```
 
 Replace:
+
 - `MODEL_LIST`: comma-separated models from user selection
 - `TYPE`: either `prd` or `tech`
 
@@ -373,6 +404,7 @@ The script calls all models in parallel and returns each model's critique or `[A
 4. **Explain your reasoning** to the user
 
 Display your active participation clearly:
+
 ```
 --- Round N ---
 Opponent Models:
@@ -400,12 +432,14 @@ SPEC_EOF
 ```
 
 The `--press` flag instructs the model to:
+
 - Confirm it read the ENTIRE document
 - List at least 3 specific sections it reviewed
 - Explain WHY it agrees (what makes the spec complete)
 - Identify ANY remaining concerns, however minor
 
 If the model truly agrees after being pressed, output to the user:
+
 ```
 Model X confirms agreement after verification:
 - Sections reviewed: [list]
@@ -416,9 +450,11 @@ Model X confirms agreement after verification:
 If the model was being lazy and now has critiques, continue the debate normally.
 
 **If ALL models (including you) agree:**
+
 - Proceed to Step 5 (Finalize and Output)
 
 **If ANY participant (model or you) has critiques:**
+
 1. List every distinct issue raised across all participants
 2. For each issue, determine if it is valid (addresses a real gap) or subjective (style preference)
 3. **If a critique raises a question that requires user input, ask the user before revising.** Examples:
@@ -431,6 +467,7 @@ If the model was being lazy and now has critiques, continue the debate normally.
 7. Go back to Step 3 with your new document
 
 **Handling conflicting critiques:**
+
 - If models suggest contradictory changes, evaluate each on merit
 - If the choice is a product decision (not purely technical), ask the user which approach they prefer
 - Choose the approach that best serves the document's audience
@@ -448,6 +485,7 @@ When ALL opponent models AND you have said `[AGREE]`:
 4. **Actionability**: Confirm stakeholders can act on this document without asking follow-up questions
 
 **For PRDs, verify:**
+
 - Executive summary captures the essence in 2-3 paragraphs
 - User personas have names, roles, goals, and pain points
 - Every user story follows "As a [persona], I want [action] so that [benefit]"
@@ -455,6 +493,7 @@ When ALL opponent models AND you have said `[AGREE]`:
 - Scope explicitly lists what is OUT as well as what is IN
 
 **For Tech Specs, verify:**
+
 - Architecture diagram or description shows all components and their interactions
 - Every API endpoint has method, path, request schema, response schema, and error codes
 - Data models include field types, constraints, indexes, and relationships
@@ -466,6 +505,7 @@ When ALL opponent models AND you have said `[AGREE]`:
 1. Print the complete, polished document to terminal
 2. Write it to `spec-output.md` in current directory
 3. Print a summary:
+
    ```
    === Debate Complete ===
    Document: [PRD | Technical Specification]
@@ -476,6 +516,7 @@ When ALL opponent models AND you have said `[AGREE]`:
    Key refinements made:
    - [bullet points of major changes from initial to final]
    ```
+
 4. If Telegram enabled:
    ```bash
    python3 "$DEBATE_PY" send-final --models MODEL_LIST --doc-type TYPE --rounds N <<'SPEC_EOF'
@@ -490,20 +531,24 @@ When ALL opponent models AND you have said `[AGREE]`:
 > "The document is finalized and written to `spec-output.md`. Please review it and let me know if you have any feedback, changes, or concerns.
 >
 > Options:
+>
 > 1. **Accept as-is** - Document is complete
 > 2. **Request changes** - Tell me what to modify, and I'll update the spec
 > 3. **Run another review cycle** - Send the updated spec through another adversarial debate"
 
 **If user requests changes:**
+
 1. Make the requested modifications to the spec
 2. Show the updated sections
 3. Write the updated spec to file
 4. Ask again: "Changes applied. Would you like to accept, make more changes, or run another review cycle?"
 
 **If user wants another review cycle:**
+
 - Proceed to Step 7 (Additional Review Cycles)
 
 **If user accepts:**
+
 - Proceed to Step 8 (PRD to Tech Spec, if applicable)
 
 ### Step 7: Additional Review Cycles (Optional)
@@ -515,11 +560,13 @@ After the user review period, or if explicitly requested:
 **If yes:**
 
 1. Ask if they want to use the same models or different ones:
+
    > "Use the same models (MODEL_LIST), or specify different models for this cycle?"
 
 2. Run the adversarial debate again from Step 2 with the current document as input.
 
 3. Track cycle count separately from round count:
+
    ```
    === Cycle 2, Round 1 ===
    ```
@@ -537,6 +584,7 @@ After the user review period, or if explicitly requested:
    ```
 
 **Use cases for additional cycles:**
+
 - First cycle with faster/cheaper models (gpt-4o), second cycle with stronger models (o1, claude-opus)
 - First cycle for structure and completeness, second cycle for security or performance focus
 - Fresh perspective after user-requested changes
@@ -548,6 +596,7 @@ After the user review period, or if explicitly requested:
 > "PRD is complete. Would you like to continue into a Technical Specification based on this PRD?"
 
 If yes:
+
 1. Use the finalized PRD as context and requirements input
 2. Optionally offer interview mode again for technical details
 3. Generate an initial Technical Specification that implements the PRD
@@ -568,6 +617,7 @@ This creates a complete PRD + Tech Spec pair from a single session.
 **Quality over speed**: The goal is a document that needs no further refinement. If any participant raises a valid concern, address it thoroughly. A spec that takes 7 rounds but is bulletproof is better than one that converges in 2 rounds with gaps.
 
 **When to say [AGREE]**: Only agree when you would confidently hand this document to:
+
 - For PRD: A product team starting implementation planning
 - For Tech Spec: An engineering team starting a sprint
 
@@ -580,6 +630,7 @@ Enable real-time notifications and human-in-the-loop feedback. Only active with 
 ### Setup
 
 Set the helper path:
+
 ```bash
 TELEGRAM_PY="$HOME/.codex/skills/adversarial-spec/scripts/telegram_bot.py"
 # Or, if running from the repo:
@@ -608,6 +659,7 @@ SPEC_EOF
 ```
 
 After each round:
+
 - Bot sends summary to Telegram
 - 60 seconds to reply with feedback (configurable via `--poll-timeout`)
 - Reply incorporated into next round
@@ -626,6 +678,7 @@ SPEC_EOF
 ```
 
 **Available focus areas:**
+
 - `security` - Authentication, authorization, input validation, encryption, vulnerabilities
 - `scalability` - Horizontal scaling, sharding, caching, load balancing, capacity planning
 - `performance` - Latency targets, throughput, query optimization, memory usage
@@ -646,6 +699,7 @@ SPEC_EOF
 ```
 
 **Available personas:**
+
 - `security-engineer` - Thinks like an attacker, paranoid about edge cases
 - `oncall-engineer` - Cares about observability, error messages, debugging at 3am
 - `junior-developer` - Flags ambiguity and tribal knowledge assumptions
@@ -672,10 +726,12 @@ SPEC_EOF
 ```
 
 Use cases:
+
 - Include existing API documentation that the new spec must integrate with
 - Include database schemas the spec must work with
 - Include design documents or prior specs for consistency
 - Include compliance requirements documents
+- `CONSTITUTION.md` is auto-included from the current project root during `critique` runs when present
 
 ### Session Persistence and Resume
 
@@ -695,6 +751,7 @@ python3 "$DEBATE_PY" sessions
 ```
 
 Sessions save:
+
 - Current spec state
 - Round number
 - All configuration (models, focus, persona, preserve-intent)
@@ -758,6 +815,7 @@ When enabled, models must:
 This shifts the default from "sand off anything unusual" to "add protective detail while preserving distinctive choices."
 
 **Use when:**
+
 - Your spec contains intentional unconventional choices
 - You want models to challenge your ideas, not homogenize them
 - Previous rounds removed things you wanted to keep
@@ -786,11 +844,13 @@ Cost is also included in JSON output and Telegram notifications.
 Save frequently used configurations as profiles:
 
 **Create a profile:**
+
 ```bash
 python3 "$DEBATE_PY" save-profile strict-security --models gpt-4o,gemini/gemini-2.0-flash --focus security --doc-type tech
 ```
 
 **Use a profile:**
+
 ```bash
 python3 "$DEBATE_PY" critique --profile strict-security <<'SPEC_EOF'
 <spec here>
@@ -798,6 +858,7 @@ SPEC_EOF
 ```
 
 **List profiles:**
+
 ```bash
 python3 "$DEBATE_PY" profiles
 ```
@@ -815,6 +876,7 @@ python3 "$DEBATE_PY" diff --previous round1.md --current round2.md
 ```
 
 Use this to see exactly what changed between rounds. Helpful for:
+
 - Understanding what feedback was incorporated
 - Reviewing changes before accepting
 - Documenting the evolution of the spec
@@ -828,6 +890,7 @@ cat spec-output.md | python3 "$DEBATE_PY" export-tasks --models gpt-4o --doc-typ
 ```
 
 Output includes:
+
 - Title
 - Type (user-story, task, spike, bug)
 - Priority (high, medium, low)
@@ -864,6 +927,7 @@ python3 "$DEBATE_PY" send-final --models MODEL_LIST --doc-type TYPE --rounds N <
 ```
 
 **Critique options:**
+
 - `--models, -m` - Comma-separated model list (auto-detects from available API keys if not specified)
 - `--doc-type, -d` - Document type: prd or tech (default: tech)
 - `--round, -r` - Current round number (default: 1)

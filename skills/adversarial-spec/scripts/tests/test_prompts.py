@@ -225,6 +225,7 @@ class TestTemplateConstants:
         assert "{round}" in REVIEW_PROMPT_TEMPLATE
         assert "{doc_type_name}" in REVIEW_PROMPT_TEMPLATE
         assert "{spec}" in REVIEW_PROMPT_TEMPLATE
+        assert "{constitution_section}" in REVIEW_PROMPT_TEMPLATE
         assert "adversarial spec development" in REVIEW_PROMPT_TEMPLATE
 
     def test_press_prompt_template_not_none(self):
@@ -234,6 +235,7 @@ class TestTemplateConstants:
 
     def test_press_prompt_template_content(self):
         assert "{round}" in PRESS_PROMPT_TEMPLATE
+        assert "{constitution_section}" in PRESS_PROMPT_TEMPLATE
         assert "AGREE" in PRESS_PROMPT_TEMPLATE
         assert "thoroughly reviewing" in PRESS_PROMPT_TEMPLATE.lower()
 
